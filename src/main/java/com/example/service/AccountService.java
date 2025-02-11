@@ -7,7 +7,7 @@ import com.example.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 // import 'List' & 'Optional' classes from Java's Utility package to use built-in Java methods
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Optional;
  * Leveraging the stereotype annotation @Service --- functionally same as @Component
  */
 @Service
-// @Transactional
+@Transactional
 public class AccountService {
     // declare an instance variable 'accountRepository'
     AccountRepository accountRepository;
