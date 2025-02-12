@@ -8,6 +8,9 @@ package com.example.controller;
 // import both 'Account.java' & 'Message.java' classes from 'entity' folder
 // ref: Week 9, "Spring Response Entity" Coding Lab --- 'Controller.java'
 import com.example.entity.*;
+import com.example.repository.AccountRepository;
+import com.example.repository.MessageRepository;
+import com.example.service.AccountService;
 import com.example.service.MessageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,7 @@ import java.util.List;
  * automatically convert variables returned from the endpoint's handler to a JSON response body, which was previously
  * done by including the @ResponseBody annotation.
  */
-@RestController     
+@RestController     /* Aside: '@RestController' annotation introduced in v4 is a combination of '@RequestBody' & '@Controller' (@RequestBody by default) */
 public class SocialMediaController {
 
     /* Spring Model-View-Controller (MVC)'s @RestController annotation allows mappings: 
@@ -47,10 +50,15 @@ public class SocialMediaController {
      *  ...
      * }
     */
-    @GetMapping("/accounts/")               
-    public Account getAllAccounts(){        // EXPERIMENTING!! --- This is not a constructor 
-        return new Account();               // This is NOT a constructor in 'Account.java' class -- rather a method in 'AccountService.java' class
-    }
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    // @GetMapping("/accounts")               
+    // List<Account> getAllAccounts(){        // EXPERIMENTING!! --- This is not a constructor 
+    //     // return new Account();               // This is NOT a constructor in 'Account.java' class -- rather a method in 'AccountService.java' class
+    //     return accountRepository.findAll();
+    // }
 
     // @GetMapping("/accounts")
     // /* generics <> used here as ResponseEntity is a raw type to reference to generic type */
@@ -71,16 +79,53 @@ public class SocialMediaController {
     @Autowired
     private MessageService messageService;
 
-    @PostMapping(value = "/messages")
-    public ResponseEntity<Message> createMessage(@RequestBody Message msg) {
-        try {
-            Message createdMessage = messageService.createMessage(msg);
-            return new ResponseEntity<>(createdMessage, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    // ## 3: Our API should be able to process the creation of new messages.
+    // ref: Week 9 Day 4, Lecture: Restful Api Development With @RestController Annotation 
+    // @PostMapping(value = "/messages")
+    // /* Aside: 'ResponseEntity' is more flexible which allows custom HTTP status code & headers (content-type, etc.) ...
+    // * Meanwhile, '@ResponseBody' -- does NOT allow customized HTTP status code */
+    // public ResponseEntity<Message> createMessage(@RequestBody Message msg){
+    //     // try {
+    //     //     Message createdMessage = messageService.createMessage(msg);
+    //     //     return new ResponseEntity<>(createdMessage, HttpStatus.CREATED);
+    //     // } catch (Exception e) {
+    //     //     return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    //     // }
+    //     // populate 'message' object w/ JSON request body fields
+    //     messageService.createMessage(msg);
+    //     // if 'msg' fails ...
+    //     if(msg.equals(null)){
+    //         // return custom HTTP status code 400 (client error)
+    //         return ResponseEntity.status(400).body(msg);
+    //     }
+    //     // otherwise if provided request body's JSON string is valid ...
+    //     else{
+    //         // return response status of 'HttpStatus' (200) alongside respective msg in response body
+    //         return ResponseEntity.status(HttpStatus.OK).body(msg);
+    //     }
+    // }
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    // ## 4: Our API should be able to retrieve all messages.
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages(){ 
+        // List<Message> messages = messageService.findAll();
+        /* utilize built-in .findAll() method from 'MessageRepository.java' class 
+        (which in hand 'extends' from Spring framework's JPARepository --- basic CRUD operations included) */
+        List<Message> allMessages = messageRepository.findAll();
+        // '.ok()' method always yields response status of 200
+        return ResponseEntity.ok(allMessages);
     }
 
-    // @GetMapping("accounts/{accountId}/messages")
-    // public 
+    // ## 5: Our API should be able to retrieve a message by its ID.
+    // @GetMapping("/messages/{messageId}")
+    // public ResponseEntity<Message> getMessageByMsgId(int msgId){
+    //     // Before use: arg need to be of 'Long' Complex object data type & change generic <> in JpaRepository<Message, Long> --- may NOT work
+    //     // Message msgByMsgId = messageRepository.findById(msgId); 
+    //     Message msgByMsgId = messageService.
+    //     return ResponseEntity.
+    // }
+
 }
