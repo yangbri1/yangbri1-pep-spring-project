@@ -16,6 +16,7 @@ import com.example.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
+
+// import javax.validation.Valid;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -165,18 +168,18 @@ public class SocialMediaController {
     //     }
     // }
 
-    @PostMapping("/messages")
-    public ResponseEntity<Message> newMessage(
-        @RequestBody int posted_by, 
-        @RequestBody String message_text,
-        @RequestBody long time_posted_epoch){
-        Optional<Message> messageOptional = messageService.newMessage(posted_by, message_text, time_posted_epoch);
-        if(messageOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(messageOptional.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
+    // @PostMapping("/messages")
+    // public ResponseEntity<Message> newMessage(
+    //     @RequestBody int posted_by, 
+    //     @RequestBody String message_text,
+    //     @RequestBody long time_posted_epoch){
+    //     Optional<Message> messageOptional = messageService.newMessage(posted_by, message_text, time_posted_epoch);
+    //     if(messageOptional.isPresent()){
+    //         return ResponseEntity.status(HttpStatus.OK).body(messageOptional.get());
+    //     } else {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    //     }
+    // }
     // @PostMapping("messages")
     // public ResponseEntity<Message> newMessage(@RequestBody Message message){
     //     Optional<Message> optionalMessage = messageService.newMessage(message.getPostedBy(), message.getMessageText(), message.getTimePostedEpoch());
@@ -196,6 +199,45 @@ public class SocialMediaController {
     //         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     //     }
     // }
+    // @PostMapping("/messages")
+    // public ResponseEntity<Message> newMessage(@RequestBody Message message) throws Exception{
+    //     try {
+    //         Message goodMessage = messageService.addMessage(message);
+    //         return ResponseEntity.ok(goodMessage);
+    //     } 
+    //     catch (Exception e) {
+    //         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    //     }
+    // }
+    // @PostMapping("/messages")
+    // public ResponseEntity<Message> newMessage(@RequestBody Message message, BindingResult result) {
+    //     if (result.hasErrors()) {
+    //         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    //     }
+
+    //     try {
+    //         Message goodMessage = messageService.addMessage(message);
+    //         return ResponseEntity.ok(goodMessage);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    //     }
+    // }
+    @PostMapping("/messages")
+    public ResponseEntity<Message> newMessage(@RequestBody Message message) {
+        // try-catch block for error handling the Unhandled Exceptions (500) 
+        try {
+            // attempt to add new message via .addMessage() method
+            Message msg = messageService.addMessage(message);
+            // return newly added message w/ status code 200 (OK)
+            return ResponseEntity.ok(msg);
+            // catch any thrown Exceptions ...
+        } catch (Exception e) {
+            // If any exception occurs, return a 400 HTTP response code (Bad Request)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     // @PostMapping("/messages")
     // public ResponseEntity<Message> createMessage(
